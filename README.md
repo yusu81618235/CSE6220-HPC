@@ -9,7 +9,7 @@ $ wget http://www.mpich.org/static/downloads/3.3.2/mpich-3.3.2.tar.gz
 $ tar -xzf mpich-3.3.2.tar.gz
 $ cd mpich-3.3.2
 ```
-2. Configure:
+2. Configure, avoid building fortran library as not needed:
 ```
 $ ./configure --disable-fortran
 ```
