@@ -1,13 +1,13 @@
-#PBS -N hello
-#PBS -l nodes=2:ppn=8
+#PBS -N prog1
+#PBS -l nodes=4:ppn=7
 #PBS -l walltime=00:30:00
 #PBS -q coc-ice-multi
-#PBS -o hello.out                                              
-#PBS -m abe
-#PBS -M mguo34@gatech.edu
+#PBS -o prog1.out                                              
 
-cd ~/cse6220/mpitutorial/tutorials/mpi-hello-world/code/
+
+cd ~/cse6220/CSE6220-HPC/projects/project-1/
 module load gcc/4.9.0
 module load mvapich2/2.2
-make
-mpirun -np 16 ./mpi_hello_world
+mpicxx ./prog1.cpp -o prog1
+mpirun -np 16 ./prog1 5000000 1
+
