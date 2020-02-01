@@ -45,10 +45,16 @@ int main(int argc, char *argv[]) {
         arg_buff[1] = atoi(argv[2]);
 
     }
+
     //printf("[%d]: before Bcast, number size is %d,master seeding number is %d\n", rank, arg_buff[0],arg_buff[1]);
+
     // all ranks start calling MPI_Bcast, root to all other ranks, assign a buff to send the argv, buff = [n,c], already converted to int type
     MPI_Bcast(&arg_buff, 2, MPI_INT, root, MPI_COMM_WORLD);
-    
+    // printf("done with MPI_Bcast");
+
+    //start the timer
+    double t_start = MPI_Wtime();
+    // printf("check time start  %f", t_start);
     //after Bcast, cast values to variable n, c , and calculate each rank's new seed number 
     int n,c;
     n = arg_buff[0];
@@ -120,10 +126,26 @@ int main(int argc, char *argv[]) {
     //        processor_name, rank, p);
     if (rank==0){
     double sum = local_s;
-    printf("sum is %f",sum);
+    double t_end = MPI_Wtime();
+    double t_running = t_end - t_start;
+    printf("sum is: %f",sum);
+    FILE *f = fopen("output.txt", "a+");
+    if (f == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // print results to output.txt
+   
+    fprintf(f, "N= %d, P = %d, C= %d, S= %f\nTime= %f\n", n,p,c,sum,t_running);
+
+    fclose(f);
     }
     // Finalize the MPI environment.
+    
 
+return 0;
 
 }
 
