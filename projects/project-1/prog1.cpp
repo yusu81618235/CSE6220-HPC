@@ -6,7 +6,7 @@
 
 #define MPI_CHK(err) if (err != MPI_SUCCESS) return err
 
-double local_sum(int local_n, int local_c,double local_nums[],double* p);
+double local_sum(long int local_n,long int local_c,double local_nums[],double* p);
 
 int main(int argc, char *argv[]) {
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     // master process:
     const int root = 0;
     // int n,c;
-    int arg_buff[2] = {0,0};
+    long int arg_buff[2] = {0,0};
     if (rank == root){
         arg_buff[0]= atoi(argv[1]);
         arg_buff[1] = atoi(argv[2]);
@@ -56,10 +56,11 @@ int main(int argc, char *argv[]) {
     double t_start = MPI_Wtime();
     // printf("check time start  %f", t_start);
     //after Bcast, cast values to variable n, c , and calculate each rank's new seed number 
-    int n,c;
+    long int n;
+    long int c;
     n = arg_buff[0];
     c = arg_buff[1];
-    int local_c;
+    long int local_c;
     local_c = c+rank;
     //printf("[%d]: After Bcast, number size is %d, new seed number is %d\n",rank, n, local_c);
     int d = log2(p);
@@ -139,7 +140,7 @@ int main(int argc, char *argv[]) {
 
     // print results to output.txt
    
-    fprintf(f, "N= %d, P = %d, C= %d, S= %f\nTime= %f\n", n,p,c,sum,t_running);
+    fprintf(f, "N= %ld, P = %d, C= %ld, S= %f\nTime= %f\n", n,p,c,sum,t_running);
 
     fclose(f);
     }
@@ -150,7 +151,7 @@ return 0;
 
 }
 
-double local_sum(int local_n, int local_c, double local_nums[],double* p){
+double local_sum(long int local_n,long int local_c, double local_nums[],double* p){
     double local_s;
     srand48(local_c);
     int i;
