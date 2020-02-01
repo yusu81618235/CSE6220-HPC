@@ -124,6 +124,7 @@ int main(int argc, char *argv[]) {
     // // Print off a hello world message
     // printf("From machine %s: rank %d out of %d processors\n",
     //        processor_name, rank, p);
+    
     if (rank==0){
     double sum = local_s;
     double t_end = MPI_Wtime();
@@ -143,7 +144,7 @@ int main(int argc, char *argv[]) {
     fclose(f);
     }
     // Finalize the MPI environment.
-    
+    MPI_Finalize();
 
 return 0;
 
