@@ -5,7 +5,7 @@
 
 #define MPI_CHK(err) if (err != MPI_SUCCESS) return err
 
-
+double local_sum(int local_n, int local_c);
 
 int main(int argc, char *argv[]) {
 
@@ -68,6 +68,9 @@ int main(int argc, char *argv[]) {
 
     }
     
+    double local_s = local_sum(local_n,local_c);
+    printf("[%d]: local sum is:%f\n",rank,local_s);
+
     // after calculated the local_c, the seed for each processor, and the local_n, the number size assigned to each processor. 
     // we need to generate the random numbers based on the local_c, local_n;
 
@@ -82,4 +85,17 @@ int main(int argc, char *argv[]) {
 
     // Finalize the MPI environment.
     MPI_Finalize();
+}
+
+double local_sum(int local_n, int local_c){
+    double local_s;
+    srand48(local_c);
+    int i;
+    double local_nums[local_n+1];
+    for (i=0; i<local_n; i++){
+        local_nums[i] = drand48();
+        // printf(" generating:%f \n",local_nums[i]);
+        local_s = local_s + local_nums[i];
+    }
+    return local_s;
 }
