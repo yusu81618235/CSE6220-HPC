@@ -52,13 +52,24 @@ int main(int argc, char *argv[]) {
     int n,c;
     n = arg_buff[0];
     c = arg_buff[1];
-    int new_seed;
-    new_seed = c+rank;
-    printf("[%d]: After Bcast, number size is %d, new seed number is %d\n",rank, n, new_seed);
-
+    int local_c;
+    local_c = c+rank;
+    printf("[%d]: After Bcast, number size is %d, new seed number is %d\n",rank, n, local_c);
     // consider the N/P, N is not divisible by P cases, we need to assign the maximum numbers for a rank, so some may have one more number than the other.
+    int local_n;
+    int remainder = n%size;
+    if (remainder != 0 && remainder >= rank+1){
+        local_n = n/size + 1;
+        printf("[%d]: assigned %d size numbers to this processor\n",rank, local_n);
+    }
+    else{
+        local_n = n/size;
+        printf("[%d]: assigned %d size numbers to this processor\n",rank, local_n);
+
+    }
     
-    // Get the rank of the process
+    // after calculated the local_c, the seed for each processor, and the local_n, the number size assigned to each processor. 
+    // we need to generate the random numbers based on the local_c, local_n;
 
     // Get the name of the processor
     // char processor_name[MPI_MAX_PROCESSOR_NAME];
