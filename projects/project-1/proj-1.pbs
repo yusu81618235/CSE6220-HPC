@@ -9,5 +9,9 @@ cd ~/cse6220/CSE6220-HPC/projects/project-1/
 module load gcc/4.9.0
 module load mvapich2/2.2
 mpicxx ./prog1.cpp -o prog1
+mpirun -np 1 ./prog1 5000000 1
+mpirun -np 2 ./prog1 5000000 1
+mpirun -np 4 ./prog1 5000000 1
+mpirun -np 8 ./prog1 5000000 1
 mpirun -np 16 ./prog1 5000000 1
 
