@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
         arg_buff[1] = atoi(argv[2]);
 
     }
-    printf("[%d]: before Bcast, number size is %d,master seeding number is %d\n", rank, arg_buff[0],arg_buff[1]);
+    //printf("[%d]: before Bcast, number size is %d,master seeding number is %d\n", rank, arg_buff[0],arg_buff[1]);
     // all ranks start calling MPI_Bcast, root to all other ranks, assign a buff to send the argv, buff = [n,c], already converted to int type
     MPI_Bcast(&arg_buff, 2, MPI_INT, root, MPI_COMM_WORLD);
     
@@ -55,19 +55,19 @@ int main(int argc, char *argv[]) {
     c = arg_buff[1];
     int local_c;
     local_c = c+rank;
-    printf("[%d]: After Bcast, number size is %d, new seed number is %d\n",rank, n, local_c);
+    //printf("[%d]: After Bcast, number size is %d, new seed number is %d\n",rank, n, local_c);
     int d = log2(p);
-    printf("[%d]: is having %d dimensions \n",rank,d);
+    //printf("[%d]: is having %d dimensions \n",rank,d);
     // consider the N/P, N is not divisible by P cases, we need to assign the maximum numbers for a rank, so some may have one more number than the other.
     int local_n;
     int remainder = n%size;
     if (remainder != 0 && remainder >= rank+1){
         local_n = n/size + 1;
-        printf("[%d]: assigned %d size numbers to this processor\n",rank, local_n);
+        //printf("[%d]: assigned %d size numbers to this processor\n",rank, local_n);
     }
     else{
         local_n = n/size;
-        printf("[%d]: assigned %d size numbers to this processor\n",rank, local_n);
+        //printf("[%d]: assigned %d size numbers to this processor\n",rank, local_n);
 
     }
     
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 
     }
     double local_s = local_sum(local_n,local_c,local_nums,ptr);
-    printf("[%d]: local sum is:%f\n",rank,local_s); 
+    //printf("[%d]: local sum is:%f\n",rank,local_s); 
     //free the ptr pointed malloc memory
     free(ptr);
     ptr = NULL;
