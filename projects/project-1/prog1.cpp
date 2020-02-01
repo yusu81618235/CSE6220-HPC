@@ -118,13 +118,12 @@ int main(int argc, char *argv[]) {
     // // Print off a hello world message
     // printf("From machine %s: rank %d out of %d processors\n",
     //        processor_name, rank, p);
-
-    // Finalize the MPI environment.
-    MPI_Finalize();
     if (rank==0){
     double sum = local_s;
     printf("sum is %f",sum);
     }
+    // Finalize the MPI environment.
+
 
 }
 
