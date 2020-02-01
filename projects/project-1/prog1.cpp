@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define MPI_CHK(err) if (err != MPI_SUCCESS) return err
 
-double local_sum(int local_n, int local_c);
+double local_sum(int local_n, int local_c,double local_nums[],double* p);
 
 int main(int argc, char *argv[]) {
 
@@ -55,6 +56,8 @@ int main(int argc, char *argv[]) {
     int local_c;
     local_c = c+rank;
     printf("[%d]: After Bcast, number size is %d, new seed number is %d\n",rank, n, local_c);
+    int d = log2(p);
+    printf("[%d]: is having %d dimensions \n",rank,d);
     // consider the N/P, N is not divisible by P cases, we need to assign the maximum numbers for a rank, so some may have one more number than the other.
     int local_n;
     int remainder = n%size;
@@ -68,11 +71,44 @@ int main(int argc, char *argv[]) {
 
     }
     
-    double local_s = local_sum(local_n,local_c);
-    printf("[%d]: local sum is:%f\n",rank,local_s);
+ 
 
     // after calculated the local_c, the seed for each processor, and the local_n, the number size assigned to each processor. 
     // we need to generate the random numbers based on the local_c, local_n;
+    //specify the request array size, based on local_n assigned to each processor
+    double local_nums[local_n+1];
+    //malloc the memory needed
+    double* ptr = (double *) malloc ( sizeof(double) * local_n );
+    if (ptr == NULL){
+        printf("[%d]: Error! memory not allocated.\n",rank);
+        exit(EXIT_FAILURE);
+
+    }
+    double local_s = local_sum(local_n,local_c,local_nums,ptr);
+    printf("[%d]: local sum is:%f\n",rank,local_s); 
+    //free the ptr pointed malloc memory
+    free(ptr);
+    ptr = NULL;
+    
+    // double sum;
+    //start send local sum in pairs 
+    for( int j= 0; j < d; j++ ){
+ 
+        int bit = pow(2, j);
+     
+        if ((rank & bit) !=0){
+            // printf("j = %d with rank %d, send to %d\n",j,rank,(rank ^ bit));
+            MPI_Send(&local_s, 1, MPI_DOUBLE,(rank ^ bit), 111, MPI_COMM_WORLD);
+        }
+        else{
+            MPI_Status stat;
+            double local_s_received;
+            MPI_Recv (&local_s_received, 1, MPI_DOUBLE, (rank ^ bit), 111, MPI_COMM_WORLD, &stat);
+            local_s = local_s+local_s_received;
+        }
+    }
+    
+
 
     // Get the name of the processor
     // char processor_name[MPI_MAX_PROCESSOR_NAME];
@@ -85,17 +121,32 @@ int main(int argc, char *argv[]) {
 
     // Finalize the MPI environment.
     MPI_Finalize();
+    if (rank==0){
+    double sum = local_s;
+    printf("sum is %f",sum);
+    }
+
 }
 
-double local_sum(int local_n, int local_c){
+double local_sum(int local_n, int local_c, double local_nums[],double* p){
     double local_s;
     srand48(local_c);
     int i;
-    double local_nums[local_n+1];
+    // double local_nums[local_n+1];
+    // double* p = (double *) malloc ( sizeof(double) * local_n ); 
+
+    p = local_nums;
     for (i=0; i<local_n; i++){
         local_nums[i] = drand48();
         // printf(" generating:%f \n",local_nums[i]);
         local_s = local_s + local_nums[i];
     }
+    // free(p);
+    // if (p != NULL){
+    //     printf("check p address for array: %p\n",p);
+    //     for (int i = 0; i < 5; ++i)
+    //         printf("%f\n", *(p + i));
+
+    // }
     return local_s;
 }
